@@ -8,20 +8,25 @@
   </head>
   <body>
       <div class="container">
-          <div class="row" id="titleBox">
-              <div class="col-sm-12">
-                  <h1>Washington DC Neighborhood Map</h1>
-              </div>
-          </div>
+          <div class="row">
+              <div class="col-sm-3">
+                  <div id="title">
+                      <h1>DC Neighborhood Map</h1>
+                  </div>
+                  <div id="list-box">
+                      <h3>Lists</h3>
+                          <input id="filter" type="text" name="filter" placeholder="type your favorite spots" >
 
-          <div class="row" id="mapBox">
-              <div class="col-sm-2">
-                  <h3>Lists</h3>
-                  <ul data-bind="foreach: list">
-                      <li></li>
-                  </ul>
+                          <ul>
+                              <!-- <li>Florida Avenue Grill</li>
+                              <li>Market Lunch</li>
+                              <li>Shaw's Tavern</li>
+                              <li>Tonic</li>
+                              <li>Daikaya</li> -->
+                          </ul>
+                    </div>
               </div>
-              <div class="col-sm-10">
+              <div class="col-sm-9">
                   <div id="map"></div>
               </div>
           </div>

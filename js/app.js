@@ -68,6 +68,9 @@ function initMap() {
           icon: icon1
       });
       markers.push(marker);
+      marker.addListener('click', function() {
+          populateInfoWindow(this, infowindow);
+        });
       // marker.setMap(map);
       var icon1 = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
       var icon2 = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
@@ -81,6 +84,43 @@ function initMap() {
           this.setIcon(icon1);
       });
    };
+
+   //populate one infowindow when the marker is clicked.
+   function populateInfoWindow(marker, infowindow) {
+      if (infowindow.marker != marker) {
+        infowindow.setContent('');
+        infowindow.marker = marker;
+
+        infowindow.addListener('closeclick', function() {
+          infowindow.marker = null;
+        });
+        var streetViewService = new google.maps.StreetViewService();
+        var radius = 50;
+
+        function getStreetView(data, status) {
+          if (status == google.maps.StreetViewStatus.OK) {
+            var nearStreetViewLocation = data.location.latLng;
+            var heading = google.maps.geometry.spherical.computeHeading(
+              nearStreetViewLocation, marker.position);
+              infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+              var panoramaOptions = {
+                position: nearStreetViewLocation,
+                pov: {
+                  heading: heading,
+                  pitch: 30
+                }
+              };
+            var panorama = new google.maps.StreetViewPanorama(
+              document.getElementById('pano'), panoramaOptions);
+          } else {
+            infowindow.setContent('<div>' + marker.title + '</div>' +
+              '<div>No Street View Found</div>');
+          }
+        }
+        streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+        infowindow.open(map, marker);
+      }
+   }
 }
 
 
