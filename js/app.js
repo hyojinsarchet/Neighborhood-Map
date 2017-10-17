@@ -73,10 +73,12 @@ function initMap() {
       var icon2 = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
 
       marker.addListener('mouseover',function() {
-          marker.setIcon(icon2);
+          // marker.setIcon(icon2);
+          this.setIcon(icon2);
       });
       marker.addListener('mouseout', function() {
-          marker.setIcon(icon1);
+          // marker.setIcon(icon1);
+          this.setIcon(icon1);
       });
    };
 }
