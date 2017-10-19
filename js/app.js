@@ -123,7 +123,19 @@ function initMap() {
    }
 }
 
+var Lists = function(data) {
+  var self = this;
+
+  self.name = ko.observable(data.name);
+  self.address = ko.observable(data.address);
+};
 
 var viewModel = function() {
+    this.nameList = ko.observableArray([]);
+
+    model.forEach(function(names){
+      this.nameList.push(Lists(names));
+    });
 
 };
+ko.applyBindings(viewModel());

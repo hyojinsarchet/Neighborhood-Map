@@ -15,16 +15,16 @@
                   </div>
                   <div id="list-box">
                       <h3>Lists</h3>
-                          <input id="filter" type="text" name="filter" placeholder="type your favorite spots" >
+                          <input id="filter" data-bind="text: filter" type="search" name="filter" placeholder="type your favorite spots">
 
-                          <ul>
-                              <!-- <li>Florida Avenue Grill</li>
-                              <li>Market Lunch</li>
-                              <li>Shaw's Tavern</li>
-                              <li>Tonic</li>
-                              <li>Daikaya</li> -->
+                          <ul data-bind="foreach: nameList">
+                              <li data-bind="text: name"></li>
                           </ul>
                     </div>
+                    <!-- <div>
+                        <input type="reset" type="button" data-bind="click: resetMap">
+
+                    </div> -->
               </div>
               <div class="col-sm-9">
                   <div id="map"></div>
