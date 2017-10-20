@@ -44,8 +44,8 @@ var map;
 var markers = [];
 
 function initMap() {
-  var self = this;
-  var infowindow = new google.maps.InfoWindow();
+    var self = this;
+    var infowindow = new google.maps.InfoWindow();
 
   map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 38.889939, lng: -77.00905},
@@ -71,18 +71,22 @@ function initMap() {
       marker.addListener('click', function() {
           populateInfoWindow(this, infowindow);
         });
-      // marker.setMap(map);
+
       var icon1 = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
       var icon2 = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
 
       marker.addListener('mouseover',function() {
-          // marker.setIcon(icon2);
           this.setIcon(icon2);
       });
       marker.addListener('mouseout', function() {
-          // marker.setIcon(icon1);
           this.setIcon(icon1);
       });
+
+      //marker bounces for a bit when the list is clicked
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+      setTimeout(function() {
+          marker.setAnimation(null)
+      }, 500);
    };
 
    //populate one infowindow when the marker is clicked.
@@ -130,12 +134,25 @@ var Lists = function(data) {
   self.address = ko.observable(data.address);
 };
 
+
 var viewModel = function() {
-    this.nameList = ko.observableArray([]);
+    var self = this;
+
+    self.nameList = ko.observableArray([]);
 
     model.forEach(function(names){
-      this.nameList.push(Lists(names));
+      self.nameList.push(new Lists(names));
     });
 
+    self.showLists = function(title) {
+        google.maps.event.trigger(title.marker, 'click');
+    };
+
 };
-ko.applyBindings(viewModel());
+
+// viewModel = new ViewModel();
+
+ko.applyBindings(new viewModel());
+
+// var vm = new viewModel();
+//   ko.applyBindings(vm);

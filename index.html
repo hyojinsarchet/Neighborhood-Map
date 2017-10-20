@@ -14,13 +14,12 @@
                       <h1>DC Neighborhood Map</h1>
                   </div>
                   <div id="list-box">
-                      <h3>Lists</h3>
-                          <input id="filter" data-bind="text: filter" type="search" name="filter" placeholder="type your favorite spots">
-
-                          <ul data-bind="foreach: nameList">
-                              <li data-bind="text: name"></li>
-                          </ul>
-                    </div>
+                      <input id="filter" data-bind="text: filter" type="search" name="filter" placeholder="type your favorite spots">
+                      <h3 id="lists">- Lists -</h3>
+                      <ul id="nameList" data-bind="foreach: nameList">
+                          <li data-bind="text: name"></li>
+                      </ul>
+                  </div>
                     <!-- <div>
                         <input type="reset" type="button" data-bind="click: resetMap">
 
