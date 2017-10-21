@@ -17,7 +17,8 @@
                       <input id="filter" data-bind="text: filter" type="search" name="filter" placeholder="type your favorite spots">
                       <h3 id="lists">- Lists -</h3>
                       <ul id="nameList" data-bind="foreach: nameList">
-                          <li data-bind="text: name"></li>
+                          <!-- <li data-bind="text: name"></li> -->
+                          <li data-bind="click: $root.showWindow">
                       </ul>
                   </div>
                     <!-- <div>

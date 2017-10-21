@@ -82,7 +82,7 @@ function initMap() {
           this.setIcon(icon1);
       });
 
-      //marker bounces for a bit when the list is clicked
+      // marker bounces for a bit when the list is clicked
       marker.setAnimation(google.maps.Animation.BOUNCE);
       setTimeout(function() {
           marker.setAnimation(null)
@@ -144,12 +144,23 @@ var viewModel = function() {
       self.nameList.push(new Lists(names));
     });
 
-    self.showLists = function(title) {
-        google.maps.event.trigger(title.marker, 'click');
-    };
+    // self.showLocation = function(title) {
+    //     google.maps.event.trigger(title.marker, 'click');
+    // };
+    var contentString = initMap.title;
 
+    self.showWindow = function(marker) {
+          infowindow.setContent(marker, function(){
+              marker.setAnimation();
+              // open the infowindow
+              // and set its content
+              // setAnimation
+              // and do the setTimeout to stop the animation
+
+          })
+      }
 };
-
+//
 // viewModel = new ViewModel();
 
 ko.applyBindings(new viewModel());
