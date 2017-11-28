@@ -44,13 +44,15 @@ var map;
 var markers = [];
 
 function initMap() {
+
     var self = this;
+
     var infowindow = new google.maps.InfoWindow();
 
-  map = new google.maps.Map(document.getElementById('map'), {
+    map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 38.889939, lng: -77.00905},
           zoom: 13
-  });
+   });
 
   //Iterate every location using markers
   for (var i = 0; i < model.length; i++) {
@@ -67,6 +69,7 @@ function initMap() {
           id: i,
           icon: icon1
       });
+
       markers.push(marker);
       marker.addListener('click', function() {
           populateInfoWindow(this, infowindow);
@@ -81,13 +84,8 @@ function initMap() {
       marker.addListener('mouseout', function() {
           this.setIcon(icon1);
       });
+};
 
-      // marker bounces for a bit when the list is clicked
-      marker.setAnimation(google.maps.Animation.BOUNCE);
-      setTimeout(function() {
-          marker.setAnimation(null)
-      }, 500);
-   };
 
    //populate one infowindow when the marker is clicked.
    function populateInfoWindow(marker, infowindow) {
@@ -127,15 +125,16 @@ function initMap() {
    }
 }
 
-var Lists = function(data) {
-  var self = this;
 
-  self.name = ko.observable(data.name);
-  self.address = ko.observable(data.address);
+var Lists = function(data) {
+
+  this.name = ko.observable(data.name);
+  this.address = ko.observable(data.address);
+  this.location = ko.observable(data.location);
 };
 
-
 var viewModel = function() {
+
     var self = this;
 
     self.nameList = ko.observableArray([]);
@@ -144,26 +143,26 @@ var viewModel = function() {
       self.nameList.push(new Lists(names));
     });
 
-    // self.showLocation = function(title) {
-    //     google.maps.event.trigger(title.marker, 'click');
-    // };
-    var contentString = initMap.title;
 
-    self.showWindow = function(marker) {
-          infowindow.setContent(marker, function(){
-              marker.setAnimation();
+    self.showWindow = function(list) {
+
+        if(list.name) {
+            map.setZoom(15);
+            map.panTo(list.location);
+            list.marker.setAnimation(google.maps.Animation.BOUNCE)
+            infoWindow.open(map, list.marker);
+        }
+        setTimeout(function() {
+          gym.marker.setAnimation(null); // End animation on marker after 2 seconds
+        }, 2000);
+      };
+};
+
               // open the infowindow
               // and set its content
               // setAnimation
               // and do the setTimeout to stop the animation
-
-          })
-      }
-};
-//
 // viewModel = new ViewModel();
+ko.applyBindings(viewModel());
 
-ko.applyBindings(new viewModel());
-
-// var vm = new viewModel();
-//   ko.applyBindings(vm);
+// ko.applyBindings(new viewModel());
