@@ -41,6 +41,7 @@ var model = [
   }];
 
 var map;
+var marker;
 var markers = [];
 
 function initMap() {
@@ -60,7 +61,7 @@ function initMap() {
       var title = model[i].name;
       var address = model[i].address;
 
-      var marker = new google.maps.Marker({
+      marker = new google.maps.Marker({
           map: map,
           position: location,
           title: title,
@@ -73,7 +74,7 @@ function initMap() {
       markers.push(marker);
       marker.addListener('click', function() {
           populateInfoWindow(this, infowindow);
-        });
+      });
 
       var icon1 = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
       var icon2 = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
@@ -85,15 +86,10 @@ function initMap() {
           this.setIcon(icon1);
       });
 
-      marker.addListener('click', function() {
-          var self = this;
-          self.setAnimation(google.maps.Animation.BOUNCE)
-          populateInfoWindow(this, infowindow);
-          setTimeout(function() {
-              self.setAnimation(null);
-          }, 2000);
-      });
 
+      marker.addListener('click', function() {
+          this.showWindow(marker);
+      });
 };
 
 
@@ -104,7 +100,7 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.marker = marker;
 
         infowindow.addListener('closeclick', function() {
-          infowindow.marker = null;
+            infowindow.marker = null;
         });
         var streetViewService = new google.maps.StreetViewService();
         var radius = 50;
@@ -136,12 +132,12 @@ function populateInfoWindow(marker, infowindow) {
 }
 
 
+
 var Lists = function(data) {
-  var self = this;
-  self.name = ko.observable(data.name);
-  self.address = ko.observable(data.address);
-  self.location = ko.observable(data.location);
-  self.show = ko.observable(true);
+    var self = this;
+    self.name = ko.observable(data.name);
+    self.address = ko.observable(data.address);
+    self.location = ko.observable(data.location);
 };
 
 
@@ -152,42 +148,22 @@ var viewModel = function() {
     self.query = ko.observable('');
 
     model.forEach(function(names){
-      self.nameList.push(new Lists(names));
+        self.nameList.push(new Lists(names));
     });
 
 
-    // self.filter = ko.computed(function() {
-    //     // var value = self.query();
-    //     for (var i = 0; i < self.location().length; i++) {
-    //         if (self.location()[i].name.toLowerCase().indexOf(value) >= 0) {
-    //             self.location()[i].show(true);
-    //             if (self.location()[i].marker) {
-    //                 self.location()[i].marker.setVisible(true);
-    //             }
-    //         } else {
-    //             self.location()[i].show(false);
-    //             if (self.location()[i].marker) {
-    //                 self.location()[i].marker.setVisible(false);
-    //             }
-    //         }
-    //     }
-    // });
-
-
-
-    // when one of the list is clicked the marker bounces for 2 seconds
+    //Click on item in list view
     self.showWindow = function(list) {
+      if (list.name) {
+          map.panTo(list.location); // Pan to correct marker when list view item is clicked
+          list.marker.setAnimation(google.maps.Animation.BOUNCE); // Bounce marker when list view item is clicked
+          infoWindow.open(map, list.marker); // Open info window on correct marker when list item is clicked
+      }
+      setTimeout(function() {
+          list.marker.setAnimation(null); // End animation on marker after 2 seconds
+      }, 2000);
+    };
 
-        if(list.name) {
-            map.setZoom(15);
-            map.panTo(data.location);
-            list.marker.setAnimation(google.maps.Animation.BOUNCE)
-            infoWindow.open(map, data.marker);
-        }
-        setTimeout(function() {
-          list.marker.setAnimation(null);
-        }, 2000);
-      };
 };
 
 // viewModel = new ViewModel();
