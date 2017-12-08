@@ -14,7 +14,7 @@
                       <h1>DC Neighborhood Map</h1>
                   </div>
                   <div id="list-box">
-                      <input id="filter" data-bind="textInput: query" type="search" placeholder="type your favorite spots">
+                      <input id="filter" data-bind="value: search, valueUpdate: 'afterkeydown'" placeholder="type your favorite spots">
                       <h3 id="lists">- Lists -</h3>
                           <ul id="nameList" data-bind="foreach: nameList">
                               <li>

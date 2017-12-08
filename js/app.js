@@ -40,6 +40,8 @@ var model = [
       }
   }];
 
+
+
 var map;
 var marker;
 var markers = [];
@@ -47,7 +49,6 @@ var markers = [];
 function initMap() {
 
     var self = this;
-
     var infowindow = new google.maps.InfoWindow();
 
     map = new google.maps.Map(document.getElementById('map'), {
@@ -82,13 +83,14 @@ function initMap() {
       marker.addListener('mouseover',function() {
           this.setIcon(icon2);
       });
+
       marker.addListener('mouseout', function() {
           this.setIcon(icon1);
       });
 
-
       marker.addListener('click', function() {
-          this.showWindow(marker);
+          viewModel.showWindow(list);
+
       });
 };
 
@@ -146,17 +148,19 @@ var viewModel = function() {
     var self = this;
     self.nameList = ko.observableArray([]);
     self.query = ko.observable('');
+    self.search = ko.observable('');
+    self.showWindow = ko.observable('');
 
     model.forEach(function(names){
         self.nameList.push(new Lists(names));
     });
 
 
-    //Click on item in list view
+    //Bounce marker when the list is clicked
     self.showWindow = function(list) {
       if (list.name) {
           map.panTo(list.location); // Pan to correct marker when list view item is clicked
-          list.marker.setAnimation(google.maps.Animation.BOUNCE); // Bounce marker when list view item is clicked
+          list.marker.setAnimation(google.maps.Animation.BOUNCE);
           infoWindow.open(map, list.marker); // Open info window on correct marker when list item is clicked
       }
       setTimeout(function() {
@@ -164,6 +168,51 @@ var viewModel = function() {
       }, 2000);
     };
 
+
+// http://www.knockmeout.net/2011/04/utility-functions-in-knockoutjs.html
+//identify the first matching item by name
+    self.search = ko.computed(function() {
+        var search = this.search().toLowerCase();
+        if (!search) {
+            return null;
+        } else {
+            return ko.utils.arrayFirst(this.filteredItems(), function(item) {
+                return ko.utils.stringStartsWith(item.name().toLowerCase(), search);
+            });
+        }
+    });
+
+
+    // Function to call the FourSquares API.
+    var foursquareRequest = function(marker) {
+        var apiURL = 'https://api.foursquare.com/v2/venues/';
+        var foursquareClientID = 'AGUWVQNXJEU211JMQVKINHZOHLFB5B3OVL05ESNW0I1BPAGJ'
+        var foursquareSecret ='YG3GS11IP2TL2SBJFDUUKMXQ1ZSMK2RUTSXFVAM5OEQYNB4Z';
+        var foursquareVersion = '20170112';
+        var venueFoursquareID = marker.id;
+        var foursquareURL = apiURL + venueFoursquareID + '?client_id=' + foursquareClientID +  '&client_secret=' + foursquareSecret +'&v=' + foursquareVersion;
+
+        self.nameList().forEach(function(list) {
+            if(list.location()){
+                google.maps.event.addListener(list.marker, 'click', function(){
+                    self.nameList(list);
+                })
+            }
+        })
+
+        $.ajax({
+            url: foursquareURL,
+            success: function(data) {
+                console.log(data);
+                var rating = data.response.venue.rating;
+                var name =  data.response.venue.name;
+                var location = data.response.venue.location.address;
+
+                infowindow.setContent(name + "; FourSquare Rating: " + rating.toString() + "; " + location);
+                infowindow.open(map, marker);
+                }
+          }).fail(function(error) {console.log(error)});
+    };
 };
 
 // viewModel = new ViewModel();
