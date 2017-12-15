@@ -44,6 +44,7 @@ var model = [
 
 var map;
 var markers = [];
+var marker;
 
 function initMap() {
 
@@ -61,8 +62,9 @@ function initMap() {
      var location = model[i].location;
      var title = model[i].name;
      var address = model[i].address;
+     model[i].marker = marker;
 
-     var marker = new google.maps.Marker({
+     marker = new google.maps.Marker({
          map: map,
          position: location,
          title: title,
@@ -89,9 +91,21 @@ function initMap() {
          this.setIcon(icon1);
      });
 
-     marker.addListener('click', function() {
-         this.showWindow(marker);
-     });
+     google.maps.event.trigger(marker, 'click');
+
+    //  google.maps.event.trigger(marker, 'click', function() {
+    //       this.setAnimation(google.maps.Animation.BOUNCE);
+    //   });
+
+    //  google.maps.event.addListener(marker, 'click');
+
+    //  marker.addListener('click', function() {
+    //      this.showWindow(marker);
+    //  });
+
+    //  marker.addListener('click', function() {
+    //      this.setAnimation(google.maps.Animation.BOUNCE);
+    //  });
   }
 };
 
@@ -140,6 +154,7 @@ var Lists = function(data) {
    this.name = ko.observable(data.name);
    this.address = ko.observable(data.address);
    this.location = ko.observable(data.location);
+  //  this.marker = ko.observable(data.marker);
 };
 
 
@@ -163,8 +178,7 @@ var viewModel = function() {
      if (list.name) {
          map.panTo(list.location); // Pan to correct marker when list view item is clicked
          list.marker.setAnimation(google.maps.Animation.BOUNCE);
-         // infoWindow.open(map, list.marker); // Open info window on correct marker when list item is clicked
-
+        //  infoWindow.open(map, list.marker); // Open info window on correct marker when list item is clicked
      }
      setTimeout(function() {
          list.marker.setAnimation(null); // End animation on marker after 2 seconds
@@ -219,4 +233,3 @@ var viewModel = function() {
 ko.applyBindings(viewModel());
 
 // ko.applyBindings(new viewModel());
-ㄴ
