@@ -91,7 +91,34 @@ function initMap() {
          this.setIcon(icon1);
      });
 
-     google.maps.event.trigger(marker, 'click');
+
+   //https://developers.google.com/maps/documentation/javascript/markers
+    //  marker.addListener('click', toggleBounce);
+     //
+    //  function toggleBounce() {
+    //    if (marker.getAnimation() !== null) {
+    //       this.setAnimation(null);
+    //       this.setIcon(icon1);
+    //     } else {
+    //       this.setAnimation(google.maps.Animation.BOUNCE);
+    //       this.setIcon(icon1);
+    //     }
+    //   };
+
+      marker.addListener('click', function() {
+          if (marker.getAnimation() !== null) {
+               marker.setAnimation(null);
+               marker.setIcon(icon1);
+           } else {
+               marker.setAnimation(google.maps.Animation.BOUNCE);
+               marker.setIcon(icon1);
+               setTimeout(function() {
+                   marker.setAnimation(null); // End animation on marker after 2 seconds
+               }, 2000);
+           }
+      });
+
+
 
     //  google.maps.event.trigger(marker, 'click', function() {
     //       this.setAnimation(google.maps.Animation.BOUNCE);
@@ -172,22 +199,37 @@ var viewModel = function() {
    });
 
 
-   // Bounce marker when the list is clicked
+  //  Bounce marker when the list is clicked
+
    self.showWindow = function(list) {
+      google.maps.event.trigger(list.marker, 'click');
+  };
 
-     if (list.name) {
-         map.panTo(list.location); // Pan to correct marker when list view item is clicked
-         list.marker.setAnimation(google.maps.Animation.BOUNCE);
-        //  infoWindow.open(map, list.marker); // Open info window on correct marker when list item is clicked
-     }
-     setTimeout(function() {
-         list.marker.setAnimation(null); // End animation on marker after 2 seconds
-     }, 2000);
-   };
 
-   // this.showWindow = function(location) {
-   //   google.maps.event.trigger(location.marker,'click');
-   // }
+
+  //  self.showWindow = function(list) {
+  //      if (list.name) {
+  //          map.panTo(list.location); // Pan to correct marker when list view item is clicked
+  //          list.marker.setAnimation(google.maps.Animation.BOUNCE);
+  //         //  infoWindow.open(map, list.marker); // Open info window on correct marker when list item is clicked
+  //      }
+  //      setTimeout(function() {
+  //          list.marker.setAnimation(null); // End animation on marker after 2 seconds
+  //      }, 2000);
+  //  };
+
+
+  //  function toggleBounce() {
+  //    if (marker.getAnimation() !== null) {
+  //       marker.setAnimation(null);
+  //       infowindow.close(map, this);
+  //     } else {
+  //       marker.setAnimation(google.maps.Animation.BOUNCE);
+  //       infowindow.open(map, this);
+  //     }
+  //   };
+
+
 
 
 // http://www.knockmeout.net/2011/04/utility-functions-in-knockoutjs.html
