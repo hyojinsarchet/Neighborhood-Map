@@ -84,10 +84,6 @@ function initMap() {
      var icon1 = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
      var icon2 = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
 
-     marker.addListener('click', function() {
-         populateInfoWindow(this, infowindow);
-     });
-
      marker.addListener('mouseover',function() {
          this.setIcon(icon2);
      });
@@ -96,21 +92,29 @@ function initMap() {
          this.setIcon(icon1);
      });
 
+     marker.addListener('click', function() {
+         populateInfoWindow(this, infowindow);
+     });
+
+     marker.addListener('click', function() {
+         marker.setAnimation(google.maps.Animation.BOUNCE);
+         setTimeout(function() {
+            marker.setAnimation(null); // End animation on marker after 2 seconds
+            }, 2000);
+     });
+
+    //  function toggleBounce(marker) {
+    //     // if (marker.getAnimation() !== null) {
+    //     //     marker.setAnimation(null);
+    //     // } else {
+    //          marker.setAnimation(google.maps.Animation.BOUNCE);
+    //          setTimeout(function() {
+    //             marker.setAnimation(null); // End animation on marker after 2 seconds
+    //          }, 2000);
+    //     // }
+    //   };
 
    //https://developers.google.com/maps/documentation/javascript/markers
-
-      // marker.addListener('click', function() {
-      //     if (marker.getAnimation() !== null) {
-      //          marker.setAnimation(null);
-      //          marker.setIcon(icon1);
-      //      } else {
-      //          marker.setAnimation(google.maps.Animation.BOUNCE);
-      //          marker.setIcon(icon1);
-      //          setTimeout(function() {
-      //              marker.setAnimation(null); // End animation on marker after 2 seconds
-      //          }, 2000);
-      //      }
-      // });
    }
 };
 
@@ -154,10 +158,11 @@ function populateInfoWindow(marker, infowindow) {
 
 // Add model array information to the list.
 function Lists(data) {
-   this.name = ko.observable(data.name);
-   this.address = ko.observable(data.address);
-   this.location = ko.observable(data.location);
-   this.marker = ko.observable(data.marker);
+   var self = this;
+   self.name = ko.observable(data.name);
+   self.address = ko.observable(data.address);
+   self.location = ko.observable(data.location);
+   self.marker = ko.observable(data.marker);
 };
 
 
@@ -176,26 +181,9 @@ var viewModel = function() {
 
 
   //  Bounce marker when the list is clicked
-
    self.showWindow = function(list) {
-      google.maps.event.trigger(list.marker, 'click', function() {
-           return markerbounce(marker);
-      })
+      google.maps.event.trigger(list.marker, 'click')
   };
-
-
-   function markerBounce(marker) {
-      if (marker.getAnimation() !== null) {
-          marker.setAnimation(null);
-      } else {
-           marker.setAnimation(google.maps.Animation.BOUNCE);
-           setTimeout(function() {
-              marker.setAnimation(null); // End animation on marker after 2 seconds
-           }, 2000);
-      }
-    };
-
-
 
 
   //  self.showWindow = function(list) {
@@ -208,19 +196,6 @@ var viewModel = function() {
   //          list.marker.setAnimation(null); // End animation on marker after 2 seconds
   //      }, 2000);
   //  };
-
-
-  //  function toggleBounce() {
-  //    if (marker.getAnimation() !== null) {
-  //       marker.setAnimation(null);
-  //       infowindow.close(map, this);
-  //     } else {
-  //       marker.setAnimation(google.maps.Animation.BOUNCE);
-  //       infowindow.open(map, this);
-  //     }
-  //   };
-
-
 
 
 // http://www.knockmeout.net/2011/04/utility-functions-in-knockoutjs.html
