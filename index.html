@@ -14,11 +14,12 @@
                       <h1>DC Neighborhood Map</h1>
                   </div>
                   <div id="list-box">
-                      <input id="filter" data-bind="value: search, valueUpdate: 'afterkeydown'" placeholder="type your favorite spots">
+                      <input id="filter" data-bind="textInput: search_text" placeholder="type your favorite spot">
                       <h3 id="lists">- Lists -</h3>
-                          <ul id="nameList" data-bind="foreach: nameList">
+                          <ul id="nameList" data-bind="foreach: filterNameList">
                               <li>
-                                  <span id="list" data-bind="text: $data.name, click: showWindow"></span>
+                                  <span id="list" data-bind="text: $data.name"></span>
+                                  <!-- , click: showWindow -->
                               </li>
                           </ul>
                   </div>
@@ -36,8 +37,8 @@
       <script src="js/knockout-3.4.2.js"></script>
       <script src="js/jquery-3.2.1.min.js"></script>
       <script src="js/app.js"></script>
-      <script async defer
+      <!-- <script async defer
           src="https://maps.googleapis.com/maps/api/js?libraries=places,drawing,geometry&key=AIzaSyDfC3eEVkeC5PPrVMX1muM2VchFbBWnWRA&v=3&callback=initMap">
-      </script>
+      </script> -->
   </body>
 </html>
