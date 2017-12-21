@@ -186,7 +186,7 @@ var viewModel = function() {
                    if (status == google.maps.StreetViewStatus.OK) {
                        var nearStreetViewLocation = data.location.latLng;
                        var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
-                       infoWindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+                      //  infoWindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
                        var panoramaOptions = {
                            position: nearStreetViewLocation,
                            pov: {
@@ -199,14 +199,15 @@ var viewModel = function() {
                         infoWindow.setContent('<div>' + marker.title + '</div>' + '<div>No Street View Found</div>');
                     }
                }
-               streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
-               infoWindow.open(map, marker);
+              //  streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+              //  infoWindow.open(map, marker);
            }
        });
     }
 
     // Function to call the FourSquares API.
     // https://discussions.udacity.com/t/how-do-i-use-foursquare-api/210274/5
+    // https://discussions.udacity.com/t/help-with-adding-the-foursquare-api/256786/6
     var foursquareRequest = function(marker) {
         var apiURL = 'https://api.foursquare.com/v2/venues/search';
         var foursquareClientID = 'AGUWVQNXJEU211JMQVKINHZOHLFB5B3OVL05ESNW0I1BPAGJ'
@@ -232,12 +233,19 @@ var viewModel = function() {
                 var name =  data.response.venue.name ? data.response.venue.name: "unavailable to show name";
                 var location = data.response.venue.location.address ? data.response.venue.location.address: "unavailable to show location";
 
-                this.infowindow.setContent('<div>' + '<b>' + name + '</b>' + '</div>' + '<div>' + '<b>' + rating.toString() + '</b>' + '</div>' + '<div>' + location + '</div>');
+                this.infowindow.setContent('<div>' + '<b>' + name + '</b>' + '</div>' +
+                                          '<div>' + '<b>' + rating.toString() + '</b>' + '</div>' +
+                                          '<div>' + location + '</div>' +
+                                          '<div>' + marker.title +
+                                          '</div><div id="pano"></div>');
+
+                streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+
                 this.infowindow.open(map, marker);
                 }
           }).fail(function(e) {
                 console.log(error)
-                infoWindow.setContent("<div><h4>Sorry. It's unavailable to load Foursquare info now.</h4></div>")
+                this.infoWindow.setContent("<div><h4>Sorry. It's unavailable to load Foursquare info now.</h4></div>")
           });
       };
 };
