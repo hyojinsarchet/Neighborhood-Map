@@ -4,7 +4,7 @@ body {
       height: 100%;
       margin: 0;
       padding: 0;
-      }
+}
 
 #map {
       height: 650px;
@@ -12,12 +12,11 @@ body {
       bottom: 30px;
       left: 0px;
       right: 0px;
-      }
+}
 
 #title {
       text-align: center;
       margin-top: 50px;
-
 }
 
 #list-box {
