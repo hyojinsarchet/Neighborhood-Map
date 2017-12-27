@@ -67,9 +67,11 @@ var map;
 var markers = [];
 var infoWindow;
 
-var viewModel = function() {
+var ViewModel = function() {
 
+   // Assigning this to an alias to avoid confusion later on when trying to refer to the scope of the ViewModel
    var self = this;
+
    var marker;
    var searchResult;
    var contentString = "";
@@ -117,6 +119,12 @@ var viewModel = function() {
             for ( i = 0; i < filteredSearchArray.length; i++) {
                 namesArray[i].marker.setVisible(true);
             }
+        };
+
+
+        // When the list is clicked activate the associated marker and open infoWindow.
+        self.showWindow = function() {
+            google.maps.event.trigger(marker, 'click');
         };
 
     // Generate marker and its other properties.
@@ -226,7 +234,6 @@ var viewModel = function() {
 
         $.ajax({
             url: apiUrl,
-            async: false,
             success: function (data) {
 
                 var rating = data.response.venue.rating ? data.response.venue.rating : "unavailable to show rating";
@@ -257,7 +264,7 @@ function initMap() {
          zoom: 13
    });
 
-  ko.applyBindings(viewModel);
+  ko.applyBindings(ViewModel);
 };
 
 
