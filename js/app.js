@@ -123,8 +123,8 @@ var ViewModel = function() {
 
 
         // When the list is clicked activate the associated marker and open infoWindow.
-        self.showWindow = function() {
-            google.maps.event.trigger(marker, 'click');
+        self.showWindow = function(namesArray) {
+            google.maps.event.trigger(namesArray.marker, 'click');
         };
 
     // Generate marker and its other properties.
