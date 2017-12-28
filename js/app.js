@@ -157,7 +157,7 @@ var ViewModel = function() {
                 var i = this.id;
 
                 // contentString = "";
-                // populateInfoWindow(this, contentString);
+                populateInfoWindow(this, contentString);
                 foursquareRequest(self.nameList()[i].FourSquareVenueID());
 
                 // contentString = contentString1 + contentString2;
@@ -183,6 +183,7 @@ var ViewModel = function() {
                       marker.setAnimation(null);
                   }, 2000);
                  marker.setIcon(icon1);
+                 infoWindow.open(map, marker);
            }
 
            // Check if infowindow is already opened on this marker.
@@ -207,15 +208,16 @@ var ViewModel = function() {
                          };
                          var panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
 
-          //                return contentString1 = '<div><h2>' + marker.title + '</h2></div><div id="pano"></div>';
-           //
-          //            } else {
-          //                return contentString1 = '<div>' + marker.title + '</div>' + '<div>No Street View Found</div>';
+
+                         return contentString1 = '<div><h2>' + marker.title + '</h2></div><div id="pano"></div>';
+
+
+                     } else {
+                         return contentString1 = '<div>' + marker.title + '</div>' + '<div>No Street View Found</div>';
                      }
                  }
-          //        return contentString1 = '<div><h2>' + marker.title + '</h2></div><div id="pano"></div>';
+                 return contentString1 = '<div><h2>' + marker.title + '</h2></div><div id="pano"></div>';
            }
-
     }
 
     // Function to call the FourSquares API.
@@ -241,7 +243,7 @@ var ViewModel = function() {
                 //var name = data.response.venue.categories.name ? data.response.venue.categories.name : "unavailable to show name";
                 var location = data.response.venue.location.address ? data.response.venue.location.address : "unavailable to show address";
 
-                contentString1 = '<div><h2>' + marker.title + '</h2></div><div id="pano"></div>';
+                // contentString1 = '<div><h2>' + marker.title + '</h2></div><div id="pano"></div>';
 
                 contentString2 = '<div><b><h4>' + 'Rating: ' + rating.toString() +
                                         '</h4></b></div><div><h4>' + 'Address: ' + location + '</h4></div>';
@@ -249,13 +251,14 @@ var ViewModel = function() {
                 contentString = contentString1 + contentString2;
 
                 infoWindow.setContent(contentString);
-                infoWindow.open(map, marker);
+                // infoWindow.open(map, marker);
+
             },
             error: function(e) {
                 contentString2 = '<h5>Foursquare data is unavailable.</h5>';
             }
         });
-        contentString2;
+        // contentString2;
 
     };
 
