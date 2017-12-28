@@ -80,6 +80,7 @@ var ViewModel = function() {
    infoWindow = new google.maps.InfoWindow();
 
 
+
    self.search_text = ko.observable('');
    self.nameList = ko.observableArray([]);
    self.showFilteredMarkers = ko.observable(); // names to store the filter
@@ -155,16 +156,16 @@ var ViewModel = function() {
             marker.addListener('click', function () {
                 var i = this.id;
 
-                contentString = "";
-                populateInfoWindow(this, contentString);
+                // contentString = "";
+                // populateInfoWindow(this, contentString);
                 foursquareRequest(self.nameList()[i].FourSquareVenueID());
 
-                contentString = contentString1 + contentString2;
-
-                if (contentString != "") {
-                    infoWindow.setContent(contentString);
-                    infoWindow.open(map, this);
-                }
+                // contentString = contentString1 + contentString2;
+                //
+                // if (contentString != "") {
+                //      infoWindow.setContent(contentString);
+                //     infoWindow.open(map, this);
+                // }
             });
         }
 
@@ -206,13 +207,13 @@ var ViewModel = function() {
                          };
                          var panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
 
-                         return contentString1 = '<div><h2>' + marker.title + '</h2></div><div id="pano"></div>';
-
-                     } else {
-                         return contentString1 = '<div>' + marker.title + '</div>' + '<div>No Street View Found</div>';
+          //                return contentString1 = '<div><h2>' + marker.title + '</h2></div><div id="pano"></div>';
+           //
+          //            } else {
+          //                return contentString1 = '<div>' + marker.title + '</div>' + '<div>No Street View Found</div>';
                      }
                  }
-                 return contentString1 = '<div><h2>' + marker.title + '</h2></div><div id="pano"></div>';
+          //        return contentString1 = '<div><h2>' + marker.title + '</h2></div><div id="pano"></div>';
            }
 
     }
@@ -240,15 +241,21 @@ var ViewModel = function() {
                 //var name = data.response.venue.categories.name ? data.response.venue.categories.name : "unavailable to show name";
                 var location = data.response.venue.location.address ? data.response.venue.location.address : "unavailable to show address";
 
-                return contentString2 = '<div><b><h4>' + 'Rating: ' + rating.toString() +
+                contentString1 = '<div><h2>' + marker.title + '</h2></div><div id="pano"></div>';
+
+                contentString2 = '<div><b><h4>' + 'Rating: ' + rating.toString() +
                                         '</h4></b></div><div><h4>' + 'Address: ' + location + '</h4></div>';
-                //'<div><b>' + 'categories: ' + name + '</b></div>' +
+
+                contentString = contentString1 + contentString2;
+
+                infoWindow.setContent(contentString);
+                infoWindow.open(map, marker);
             },
-            error: function (e) {
-                return contentString2 = '<h5>Foursquare data is unavailable.</h5>';
+            error: function(e) {
+                contentString2 = '<h5>Foursquare data is unavailable.</h5>';
             }
         });
-        return contentString2;
+        contentString2;
 
     };
 
