@@ -67,7 +67,7 @@ var map;
 var markers = [];
 var infoWindow;
 
-var viewModel = function() {
+var ViewModel = function() {
 
    var self = this;
    var marker;
@@ -115,7 +115,7 @@ var viewModel = function() {
                 namesArray[i].marker.setVisible(false);
             }
             for ( i = 0; i < filteredSearchArray.length; i++) {
-                namesArray[i].marker.setVisible(true);
+                filteredSearchArray[i].marker.setVisible(true);
             }
         };
 
@@ -156,15 +156,13 @@ var viewModel = function() {
                 populateInfoWindow(this, contentString);
                 foursquareRequest(self.nameList()[i].FourSquareVenueID());
 
-                contentString = contentString1 + contentString2;
+                // contentString = contentString1 + contentString2;
 
-                if (contentString != "") {
-                    infoWindow.setContent(contentString);
-                    infoWindow.open(map, this);
-                }
-
+                // if (contentString != "") {
+                //     // infoWindow.setContent(contentString);
+                //     infoWindow.open(map, this);
+                // }
             });
-
         }
 
 
@@ -172,7 +170,7 @@ var viewModel = function() {
     function populateInfoWindow(marker, popupContent) {
 
              if (marker.getAnimation() !== null) {
-                 this.setAnimation(null);
+                 marker.setAnimation(null);
                  marker.setIcon(icon2);
                  infoWindow.close(map, this);
              } else {
@@ -181,38 +179,39 @@ var viewModel = function() {
                       marker.setAnimation(null);
                   }, 2000);
                  marker.setIcon(icon1);
-           }
+                //  infoWindow.open(map, this);
+             }
 
-           // Check if infowindow is already opened on this marker.
-             if (infoWindow.marker != marker) {
-                 infoWindow.marker = marker;
+          //  Check if infowindow is already opened on this marker.
+            //  if (infoWindow.marker != marker) {
+            //      infoWindow.marker = marker;
 
-                 var streetViewService = new google.maps.StreetViewService();
-                 var radius = 50;
-                 streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+                //  var streetViewService = new google.maps.StreetViewService();
+                //  var radius = 50;
+                //  streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
 
-                 function getStreetView(data, status) {
-                     contentString = "";
-                     if (status == google.maps.StreetViewStatus.OK) {
-                         var nearStreetViewLocation = data.location.latLng;
-                         var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
-                         var panoramaOptions = {
-                             position: nearStreetViewLocation,
-                             pov: {
-                                 heading: heading,
-                                 pitch: 30
-                             }
-                         };
-                         var panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
-
-                         return contentString1 = '<div><h1>' + marker.title + '</h1></div><div id="pano"></div>';
-
-                     } else {
-                         return contentString1 = '<div>' + marker.title + '</div>' + '<div>No Street View Found</div>';
-                     }
-                 }
-                 return contentString1 = '<div><h1>' + marker.title + '</h1></div><div id="pano"></div>';
-           }
+          //        function getStreetView(data, status) {
+          //            contentString = "";
+          //            if (status == google.maps.StreetViewStatus.OK) {
+          //                var nearStreetViewLocation = data.location.latLng;
+          //                var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
+          //                var panoramaOptions = {
+          //                    position: nearStreetViewLocation,
+          //                    pov: {
+          //                        heading: heading,
+          //                        pitch: 30
+          //                    }
+          //                };
+          //                var panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+           //
+          //                return contentString1 = '<div><h1>' + marker.title + '</h1></div><div id="pano"></div>';
+           //
+          //            } else {
+          //                return contentString1 = '<div>' + marker.title + '</div>' + '<div>No Street View Found</div>';
+          //            }
+          //        }
+          //        return contentString1 = '<div><h1>' + marker.title + '</h1></div><div id="pano"></div>';
+          //  }
 
     }
 
@@ -233,26 +232,51 @@ var viewModel = function() {
 
         $.ajax({
             url: apiUrl,
-            async: false,
+            // async: true,
             success: function (data) {
 
                 var rating = data.response.venue.rating ? data.response.venue.rating : "unavailable to show rating";
                 //var name = data.response.venue.categories.name ? data.response.venue.categories.name : "unavailable to show name";
                 var location = data.response.venue.location.address ? data.response.venue.location.address : "unavailable to show address";
 
-                return contentString2 = '<div><b><h3>' + 'Rating: ' + rating.toString() +
-                                        '</h3></b></div><div><h3>' + 'Address: ' + location + '</h3></div>';
-                //'<div><b>' + 'categories: ' + name + '</b></div>' +
-            },
+                // Populate foursquare content strings.
+                contentString1 = '<div><b><h3>' + 'Rating: ' + rating.toString() +
+                                '</h3></b></div><div><h3>' + 'Address: ' + location + '</h3></div>';
+
+                // Initiate StreetView requests.
+                var streetViewService = new google.maps.StreetViewService();
+                streetViewService.getPanoramaByLocation(marker.position, 50, function(data, status) {
+                    if (status == google.maps.StreetViewStatus.OK) {
+                        var nearStreetViewLocation = data.location.latLng;
+                        var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
+                        var panoramaOptions = {
+                            position: nearStreetViewLocation,
+                            pov: {
+                                heading: heading,
+                                pitch: 30
+                            }
+                        };
+                        var panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+
+                        // Populate Google streetView content strings.
+                        contentString2 = '<div><h1>' + marker.title + '</h1></div><div id="pano"></div>';
+
+                        // Populate infoWindow content strings.
+                        contentString = contentString1 + contentString2;
+
+                        infoWindow.setContent(contentString);
+                        infoWindow.open(map, marker);
+                  } // close if
+                }); // close streetViewService
+            }, // close success
             error: function (e) {
-                return contentString2 = '<h5>Foursquare data is unavailable.</h5>';
+                contentString1 = '<h5>Foursquare data is unavailable.</h5>';
+                contentString2 = '<div>' + marker.title + '</div>' + '<div>No Street View Found</div>';
             }
-        });
-        return contentString2;
-
-    };
-
-};
+        }); // close ajax
+        // return contentString2;
+    }; // close foursquareRequest
+}; // close ViewModel
 
 
 
@@ -264,7 +288,7 @@ function initMap() {
          zoom: 13
    });
 
-  ko.applyBindings(viewModel);
+  ko.applyBindings(ViewModel);
 };
 
 
