@@ -76,6 +76,9 @@ var ViewModel = function() {
    var contentString1 = "";
    var contentString2 = "";
    infoWindow = new google.maps.InfoWindow();
+  //  infoWindow = new google.maps.InfoWindow({
+  //    content: contentString
+  // });
 
 
    self.search_text = ko.observable('');
@@ -112,7 +115,7 @@ var ViewModel = function() {
         self.showFilteredMarkers = function(filteredSearchArray, namesArray) {
               var i;
             for ( i = 0; i < namesArray.length; i++) {
-                namesArray[i].marker.setVisible(false);
+                filteredSearchArray[i].marker.setVisible(false);
             }
             for ( i = 0; i < filteredSearchArray.length; i++) {
                 filteredSearchArray[i].marker.setVisible(true);
@@ -154,15 +157,16 @@ var ViewModel = function() {
 
                 contentString = "";
                 populateInfoWindow(this, contentString);
-                foursquareRequest(self.nameList()[i].FourSquareVenueID());
-
+                // foursquareRequest(self.nameList()[i].FourSquareVenueID());
+                foursquareRequest(self.nameList()[i].FourSquareVenueID(), this);
+            });
                 // contentString = contentString1 + contentString2;
-
+                //
                 // if (contentString != "") {
                 //     // infoWindow.setContent(contentString);
                 //     infoWindow.open(map, this);
                 // }
-            });
+            // });
         }
 
 
@@ -172,14 +176,13 @@ var ViewModel = function() {
              if (marker.getAnimation() !== null) {
                  marker.setAnimation(null);
                  marker.setIcon(icon2);
-                 infoWindow.close(map, this);
+                 infoWindow.close(map, marker);
              } else {
                  marker.setAnimation(google.maps.Animation.BOUNCE);
                  setTimeout(function(){
                       marker.setAnimation(null);
                   }, 2000);
                  marker.setIcon(icon1);
-                //  infoWindow.open(map, this);
              }
 
           //  Check if infowindow is already opened on this marker.
@@ -263,15 +266,23 @@ var ViewModel = function() {
 
                         // Populate infoWindow content strings.
                         contentString = contentString1 + contentString2;
+                       //
+                      //   infoWindow = new google.maps.InfoWindow({
+                      //     content: contentString
+                      //  });
 
                         infoWindow.setContent(contentString);
                         infoWindow.open(map, marker);
+
+
+
                   } // close if
                 }); // close streetViewService
             }, // close success
             error: function (e) {
                 contentString1 = '<h5>Foursquare data is unavailable.</h5>';
                 contentString2 = '<div>' + marker.title + '</div>' + '<div>No Street View Found</div>';
+                contentString = contentString1 + contentString2;
             }
         }); // close ajax
         // return contentString2;
