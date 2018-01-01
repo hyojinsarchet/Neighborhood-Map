@@ -54,6 +54,7 @@ var Model = {
 // Add google clendar first.
 addMapScript();
 
+
 // Add model array information to the list.
 function Lists(data) {
    var self = this;
@@ -63,23 +64,18 @@ function Lists(data) {
    self.FourSquareVenueID = ko.observable(data.FourSquareVenueID);
 };
 
+
 var map;
 var markers = [];
 var infoWindow;
+
 
 var ViewModel = function() {
 
    var self = this;
    var marker;
    var searchResult;
-   var contentString = "";
-   var contentString1 = "";
-   var contentString2 = "";
    infoWindow = new google.maps.InfoWindow();
-  //  infoWindow = new google.maps.InfoWindow({
-  //    content: contentString
-  // });
-
 
    self.search_text = ko.observable('');
    self.nameList = ko.observableArray([]);
@@ -115,19 +111,19 @@ var ViewModel = function() {
         self.showFilteredMarkers = function(filteredSearchArray, namesArray) {
               var i;
             for ( i = 0; i < namesArray.length; i++) {
-                filteredSearchArray[i].marker.setVisible(false);
+                namesArray[i].marker.setVisible(false);
             }
             for ( i = 0; i < filteredSearchArray.length; i++) {
                 filteredSearchArray[i].marker.setVisible(true);
             }
         };
 
-    // When the list is clicked activate the associated marker and open infoWindow.
+        // When the list is clicked activate the associated marker and open infoWindow.
         self.showWindow = function(namesArray) {
             google.maps.event.trigger(namesArray.marker, 'click');
         };
 
-    // Generate marker and its other properties.
+        // Generate marker and its other properties.
         for (var i = 0; i < self.nameList().length; i++) {
 
             marker = new google.maps.Marker({
@@ -155,18 +151,9 @@ var ViewModel = function() {
             marker.addListener('click', function () {
                 var i = this.id;
 
-                contentString = "";
-                populateInfoWindow(this, contentString);
-                // foursquareRequest(self.nameList()[i].FourSquareVenueID());
+                populateInfoWindow(this);
                 foursquareRequest(self.nameList()[i].FourSquareVenueID(), this);
             });
-                // contentString = contentString1 + contentString2;
-                //
-                // if (contentString != "") {
-                //     // infoWindow.setContent(contentString);
-                //     infoWindow.open(map, this);
-                // }
-            // });
         }
 
 
@@ -184,6 +171,7 @@ var ViewModel = function() {
                   }, 2000);
                  marker.setIcon(icon1);
              }
+                  infoWindow.marker != marker;
 
           //  Check if infowindow is already opened on this marker.
             //  if (infoWindow.marker != marker) {
@@ -221,7 +209,7 @@ var ViewModel = function() {
     // Function to call the FourSquares API.
     // https://discussions.udacity.com/t/how-do-i-use-foursquare-api/210274/5
     // https://discussions.udacity.com/t/help-with-adding-the-foursquare-api/256786/6
-    function foursquareRequest (VenueID) {
+    function foursquareRequest (VenueID, marker) {
 
         var apiURL = 'https://api.foursquare.com/v2/venues/';
         var foursquareClientID = 'AGUWVQNXJEU211JMQVKINHZOHLFB5B3OVL05ESNW0I1BPAGJ';
@@ -235,20 +223,20 @@ var ViewModel = function() {
 
         $.ajax({
             url: apiUrl,
-            // async: true,
+            async: true,
             success: function (data) {
 
-                var rating = data.response.venue.rating ? data.response.venue.rating : "unavailable to show rating";
-                //var name = data.response.venue.categories.name ? data.response.venue.categories.name : "unavailable to show name";
-                var location = data.response.venue.location.address ? data.response.venue.location.address : "unavailable to show address";
+                var contentString = "";
+                var contentString1 = "";
+                var contentString2 = "";
 
-                // Populate foursquare content strings.
-                contentString1 = '<div><b><h3>' + 'Rating: ' + rating.toString() +
-                                '</h3></b></div><div><h3>' + 'Address: ' + location + '</h3></div>';
-
-                // Initiate StreetView requests.
+                // Google StreetView content requests.
                 var streetViewService = new google.maps.StreetViewService();
-                streetViewService.getPanoramaByLocation(marker.position, 50, function(data, status) {
+                var radius = 50;
+                streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+
+                function getStreetView(data, status) {
+                    contentString = "";
                     if (status == google.maps.StreetViewStatus.OK) {
                         var nearStreetViewLocation = data.location.latLng;
                         var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
@@ -260,32 +248,35 @@ var ViewModel = function() {
                             }
                         };
                         var panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+                        contentString1 = '<div><h1>' + marker.title + '</h1></div><div id="pano"></div>';
 
-                        // Populate Google streetView content strings.
-                        contentString2 = '<div><h1>' + marker.title + '</h1></div><div id="pano"></div>';
+                    } else {
+                        contentString1 = '<div>' + marker.title + '</div>' + '<div>No Street View Found</div>';
+                    }
+                }
+                contentString1 = '<div><h1>' + marker.title + '</h1></div><div id="pano"></div>';
 
-                        // Populate infoWindow content strings.
-                        contentString = contentString1 + contentString2;
-                       //
-                      //   infoWindow = new google.maps.InfoWindow({
-                      //     content: contentString
-                      //  });
+                // Foursquare content requests.
+                var rating = data.response.venue.rating ? data.response.venue.rating : "unavailable to show rating";
+                var location = data.response.venue.location.address ? data.response.venue.location.address : "unavailable to show address";
 
-                        infoWindow.setContent(contentString);
-                        infoWindow.open(map, marker);
+                contentString2 = '<div><b><h3>' + 'Rating: ' + rating.toString() +
+                                        '</h3></b></div><div><h3>' + 'Address: ' + location + '</h3></div>';
 
-
-
-                  } // close if
-                }); // close streetViewService
-            }, // close success
-            error: function (e) {
-                contentString1 = '<h5>Foursquare data is unavailable.</h5>';
-                contentString2 = '<div>' + marker.title + '</div>' + '<div>No Street View Found</div>';
                 contentString = contentString1 + contentString2;
+
+                // Populate infoWindow content strings (Google StreetView + Foursquare contents).
+                contentString = contentString1 + contentString2;
+                infoWindow.setContent(contentString);
+                infoWindow.open(map, marker);
+
+            }, 
+            error: function (e) {
+                contentString = '<h5>Foursquare data is unavailable.</h5>';
+                infoWindow.setContent(contentString);
+                infoWindow.open(map, marker);
             }
         }); // close ajax
-        // return contentString2;
     }; // close foursquareRequest
 }; // close ViewModel
 
