@@ -224,8 +224,10 @@ var ViewModel = function() {
         $.ajax({
             url: apiUrl,
             async: true,
-            success: function (data) {
+            success: function (fsqData) {
+                // now foursquare response is available as "fsqData"
 
+                // //initialize content strings.
                 var contentString = "";
                 var contentString1 = "";
                 var contentString2 = "";
@@ -235,10 +237,15 @@ var ViewModel = function() {
                 var radius = 50;
                 streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
 
-                function getStreetView(data, status) {
+                // street view loading callback function
+                function getStreetView(swData, status) {
+                    // data from streetview is available as "swData"
+
                     contentString = "";
                     if (status == google.maps.StreetViewStatus.OK) {
-                        var nearStreetViewLocation = data.location.latLng;
+                        //OK response from streetview
+
+                        var nearStreetViewLocation = swData.location.latLng;
                         var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
                         var panoramaOptions = {
                             position: nearStreetViewLocation,
@@ -247,30 +254,45 @@ var ViewModel = function() {
                                 pitch: 30
                             }
                         };
-                        var panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+
+                        //start forming content
+                        //first put up the reference element needed for panorama (i.e with id "pano")
                         contentString1 = '<div><h1>' + marker.title + '</h1></div><div id="pano"></div>';
 
+                        // Foursquare content requests / gather together the data from foursquare
+                        var rating = fsqData.response.venue.rating ? fsqData.response.venue.rating : "unavailable to show rating";
+                        var location = fsqData.response.venue.location.address ? fsqData.response.venue.location.address : "unavailable to show address";
+
+                        contentString2 = '<div><b><h3>' + 'Rating: ' + rating.toString() +
+                                                '</h3></b></div><div><h3>' + 'Address: ' + location + '</h3></div>';
+
+                        // Populate infoWindow content strings (Google StreetView + Foursquare contents).
+                        contentString = contentString1 + contentString2;
+
+                        infoWindow.setContent(contentString);
+                        infoWindow.open(map, marker);
+
+                        // initialize panorama
+                        // this requires an element with id "pano" to exist
+                        // and that's why we're doing this here after opening the infoWindow
+                        var panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), panoramaOptions);
+
                     } else {
+                        // non OK response from streetview
+                        // so just drop in the error message
                         contentString1 = '<div>' + marker.title + '</div>' + '<div>No Street View Found</div>';
+                        rating = fsqData.response.venue.rating ? fsqData.response.venue.rating : "unavailable to show rating";
+                        location = fsqData.response.venue.location.address ? fsqData.response.venue.location.address : "unavailable to show address";
+
+                        contentString2 = '<div><b><h3>' + 'Rating: ' + rating.toString() +
+                            '</h3></b></div><div><h3>' + 'Address: ' + location + '</h3></div>';
+                        contentString = contentString1 + contentString2;
+
+                        infoWindow.setContent(contentString);
+                        infoWindow.open(map, marker);
                     }
                 }
-                contentString1 = '<div><h1>' + marker.title + '</h1></div><div id="pano"></div>';
-
-                // Foursquare content requests.
-                var rating = data.response.venue.rating ? data.response.venue.rating : "unavailable to show rating";
-                var location = data.response.venue.location.address ? data.response.venue.location.address : "unavailable to show address";
-
-                contentString2 = '<div><b><h3>' + 'Rating: ' + rating.toString() +
-                                        '</h3></b></div><div><h3>' + 'Address: ' + location + '</h3></div>';
-
-                contentString = contentString1 + contentString2;
-
-                // Populate infoWindow content strings (Google StreetView + Foursquare contents).
-                contentString = contentString1 + contentString2;
-                infoWindow.setContent(contentString);
-                infoWindow.open(map, marker);
-
-            }, 
+            },
             error: function (e) {
                 contentString = '<h5>Foursquare data is unavailable.</h5>';
                 infoWindow.setContent(contentString);
